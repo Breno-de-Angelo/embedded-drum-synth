@@ -1,0 +1,102 @@
+# Doxyfile gerado para o projeto embedded-drum-synth
+
+#---------------------------------------------------------------------------
+# Configurações do Projeto
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "Embedded Drum Synth"
+PROJECT_BRIEF          = "Sintetizador de bateria para EFM32GG"
+PROJECT_LOGO           = # Você pode adicionar o caminho para um logo aqui, se tiver um.
+OUTPUT_DIRECTORY       = .
+CREATE_SUBDIRS         = YES
+OUTPUT_LANGUAGE        = Portuguese-BRAZIL
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+ALWAYS_DETAILED_SEC    = NO
+STRIP_FROM_PATH        = $(CURDIR)
+
+#---------------------------------------------------------------------------
+# Configurações de Build
+#---------------------------------------------------------------------------
+OPTIMIZE_OUTPUT_FOR_C  = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_NO_PARAMDOC       = YES
+
+#---------------------------------------------------------------------------
+# Configurações de Caminhos (Paths)
+#---------------------------------------------------------------------------
+
+# Diretórios que contêm os arquivos-fonte a serem documentados.
+# Incluímos a raiz (.), firmware e startup.
+INPUT                  = . \
+                         firmware \
+                         startup
+
+# Padrões de arquivos a serem incluídos.
+FILE_PATTERNS          = *.c \
+                         *.h \
+                         *.md
+
+# Buscar por arquivos recursivamente nos diretórios de INPUT.
+RECURSIVE              = YES
+
+# Diretórios e arquivos a serem excluídos da documentação.
+# Essencial para ignorar a pasta de build, os arquivos de som e a própria saída.
+EXCLUDE                = build \
+                         sounds \
+                         html \
+                         latex
+
+EXCLUDE_PATTERNS       = */.git/* \
+                         *efm32gg.ld
+
+# Usar o README.md como a página principal da documentação.
+USE_MDFILE_AS_MAINPAGE = README.md
+
+#---------------------------------------------------------------------------
+# Configurações de Saída
+#---------------------------------------------------------------------------
+
+# --- Saída em HTML ---
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+
+# --- Saída em LaTeX (opcional, para gerar PDFs) ---
+GENERATE_LATEX         = YES
+LATEX_OUTPUT           = latex
+COMPACT_LATEX          = YES
+PAPER_TYPE             = a4
+EXTRA_PACKAGES         =
+
+#---------------------------------------------------------------------------
+# Configurações de Gráficos (requer Graphviz/dot)
+#---------------------------------------------------------------------------
+
+# Habilita o uso do 'dot' do Graphviz para gerar diagramas.
+HAVE_DOT               = YES
+DOT_FONTNAME           = Helvetica
+DOT_FONTSIZE           = 10
+
+# Gera o grafo de chamadas de funções (funções chamadas por esta função).
+CALL_GRAPH             = YES
+
+# Gera o grafo de chamadores de funções (funções que chamam esta função).
+CALLER_GRAPH           = YES
+
+# Gera o grafo de diretórios.
+DIRECTORY_GRAPH        = YES
+
+# Gera o grafo de colaboração para classes e structs.
+COLLABORATION_GRAPH    = YES
+
+UML_LOOK               = YES
+UML_LIMIT_NUM_FIELDS   = 10
+
+#---------------------------------------------------------------------------
+# Configurações de Codificação
+#---------------------------------------------------------------------------
+DOXYFILE_ENCODING      = UTF-8
+OUTPUT_CHARSET         = UTF-8
