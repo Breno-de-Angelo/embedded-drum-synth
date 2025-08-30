@@ -534,7 +534,7 @@ int rc;
     PWM_Stop(timer);
 
     /* Configure timer to default values: div=1 top=max */
-    rc = PWM_ConfigTimer(timer,2,MAXTIMER);
+    rc = PWM_ConfigTimer(timer,2,0x7F);
     if( rc < 0 ) return -3;
 
     uint32_t route = timer->ROUTE;

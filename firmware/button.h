@@ -1,8 +1,8 @@
-/** ***************************************************************************
+/*************************************************************************//**
  * @file    button.h
  * @brief   Button HAL for EFM32GG STK3200
  * @version 1.0
-******************************************************************************/
+ *****************************************************************************/
 #ifndef BUTTON_H
 #define BUTTON_H
 #include <stdint.h>
@@ -25,5 +25,4 @@ uint32_t    Button_ReadChanges(void);
 uint32_t    Button_ReadPressed(void);
 uint32_t    Button_ReadReleased(void);
 void        Button_SetCallback( void (*proc)(uint32_t parm) );
-void        Button_Processing(void); // Must be called every X ms
 #endif // BUTTON_H

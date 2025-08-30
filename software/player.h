@@ -7,33 +7,28 @@
 #define PLAYER_H
 #include <stdint.h>
 
-#define CURRENT_SOUNDS_MAX 10
+#define CURRENT_SOUNDS_MAX 20
+
+extern const uint8_t rock_rythm[];
+extern const uint32_t rock_rythm_length;
+
+typedef struct Player Player_t;
 
 typedef struct {
-    uint32_t       tick;         // Current tick in the playback
-    const int16_t  *sound;       // Pointer to the sound data
-    uint32_t       sound_length; // Length of the sound data in samples
-} CurrentSounds_t;
-
-typedef struct
-{
-    uint32_t        sample_rate;                        // Sample rate in Hz
-    uint32_t        tick;                               // Current tick in the playback
-    uint8_t         paused;                             // Playback paused state
-    uint8_t         bpm;                                // Beats per minute
-    uint8_t         beats_per_bar;                      // Number of beats in a bar
-    int8_t          current_quarter_beat;               // Current quarter beat in the bar
-    CurrentSounds_t current_sounds[CURRENT_SOUNDS_MAX]; // Pointer to currently playing sounds
-    uint8_t         current_sounds_mask;                // Mask for currently playing sounds
-    uint8_t         *rythm;                             // Pointer to the rythm pattern
-    uint32_t        rythm_length;                       // Length of the rythm pattern
-} Player_t;
+    uint32_t sample_rate;      // Sample rate in Hz
+    uint8_t  bpm;              // Beats per minute
+    uint8_t  beats_per_bar;    // Number of beats in a bar
+} Player_Config_t;
 
 // Functions to control playback
+Player_t *Player_GetInstance(void);
+void Player_Init(Player_t *player, Player_Config_t config);
 int16_t Player_Tick(Player_t *player);
 void Player_Stop(Player_t *player);
 void Player_Pause(Player_t *player);
 void Player_Resume(Player_t *player);
 void Player_TogglePause(Player_t *player);
+char *Player_NextRythm(Player_t *player);
+char *Player_GetRythmName(Player_t *player);
 
 #endif // PLAYER_H
