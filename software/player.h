@@ -30,5 +30,6 @@ void Player_Resume(Player_t *player);
 void Player_TogglePause(Player_t *player);
 char *Player_NextRythm(Player_t *player);
 char *Player_GetRythmName(Player_t *player);
+void Player_SetBPM(Player_t *player, uint8_t bpm);
 
 #endif // PLAYER_H

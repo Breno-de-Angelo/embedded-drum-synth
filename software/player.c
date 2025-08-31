@@ -208,3 +208,9 @@ char *Player_GetRythmName(Player_t *player) {
     }
     return "Unknown";
 }
+
+void Player_SetBPM(Player_t *player, uint8_t bpm) {
+    if (!player) return;
+    player->tick = (player->tick * player->bpm) / bpm; // Adjust tick to maintain timing
+    player->bpm = bpm;
+}

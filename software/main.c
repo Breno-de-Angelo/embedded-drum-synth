@@ -19,12 +19,14 @@
 #include "lcd.h"
 #include "led.h"
 #include "pwm.h"
+#include "touch.h"
 
 #include "player.h"
 
 #define PWM_CHANNEL 1
 #define PWM_LOC PWM_LOC4 // PWM location for TIMER0 channel 1
 #define TIMER TIMER0
+#define TOUCH_PERIOD 100
 
 const int TickDivisor = 44100; // Frequency of SysTick: 44.1 kHz equal to audio sample rate
 Player_t *player;
@@ -35,13 +37,19 @@ void set_rythm_display(char *rythm)
     LCD_WriteAlphanumericDisplay(rythm);
 }
 
-void set_bpm_display(uint8_t bpm)
+void show_bpm_display(uint8_t bpm)
 {
     current_bpm[0] = '0' + (bpm / 100);
     current_bpm[1] = '0' + ((bpm / 10) % 10);
     current_bpm[2] = '0' + (bpm % 10);
     current_bpm[3] = '\0'; // Null-terminate the string
     LCD_WriteNumericDisplay(current_bpm);
+}
+
+void set_bpm_display(Player_t *player, uint8_t bpm)
+{
+    Player_SetBPM(player, bpm);
+    show_bpm_display(bpm);
 }
 
 void buttoncallback(uint32_t v)
@@ -89,6 +97,20 @@ void play_tone()
 void SysTick_Handler(void)
 {
     static int16_t value = 0;
+    static int touchcounter = 0;
+
+    /* Touch processing */
+    if( touchcounter != 0 ) {
+        touchcounter--;
+    } else {
+        touchcounter = TOUCH_PERIOD;
+        Touch_PeriodicProcess();
+        unsigned int v = Touch_Read();
+        int touch_center = Touch_GetCenterOfTouch(v);
+        if (touch_center > 0) {
+            set_bpm_display(player, 60 + (7 - touch_center) * 15);
+        }
+    }
 
     value = Player_Tick(player);
 
@@ -122,14 +144,17 @@ int main(void)
     // Configure PWM output
     PWM_Init(TIMER, PWM_LOC, PWM_PARAMS_CH1_ENABLEPIN);
 
+    // Configure touch input
+    Touch_Init();
+
     // Initialize player
     Player_Config_t config = {
         .sample_rate = 44100,
-        .bpm = 120,
+        .bpm = 70,
         .beats_per_bar = 4};
     player = Player_GetInstance();
     Player_Init(player, config);
-    set_bpm_display(config.bpm);
+    show_bpm_display(config.bpm);
     set_rythm_display(Player_GetRythmName(player));
 
     /* Enable interrupts */
