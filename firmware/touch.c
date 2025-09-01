@@ -74,7 +74,7 @@
 #define HALFBIAS            0
 
 // Threshold to detect touch (NUM/DEN)
-#define THRESHOLD_NUM       7
+#define THRESHOLD_NUM       8
 #define THRESHOLD_DEN       10
 
 

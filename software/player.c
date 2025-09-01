@@ -40,7 +40,6 @@ const uint8_t rock_rythm[] = {
     bKICK|bSNARE, bKICK, 0, 0,
     bKICK, 0, bKICK, 0 
 };
-
 const uint32_t rock_rythm_length = sizeof(rock_rythm) / sizeof(rock_rythm[0]);
 
 const uint8_t funk_rythm[] = {
