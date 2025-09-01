@@ -447,7 +447,6 @@ int rc;
         
         int size = (datasize-blocksize-1)*(bitssample/8)/blocksize;
         fprintf(fout,"const int%1d_t %s[] = {\n",bitssample,waveinfo->identifier);
-        fprintf(fout, "#endif // %s_H\n", waveinfo->identifier);
     }
     for(long pos=0; pos<datasize; pos+=blocksize) {
         rc = fread(area,blocksize,1,fin);
@@ -490,6 +489,7 @@ int rc;
     }
     if( waveinfo->outputflags&FLAGS_CCODE ) {
         fprintf(fout,"}; // %s\n",waveinfo->identifier);
+        fprintf(fout, "#endif // %s_H\n", waveinfo->identifier);
     }
     if( (waveinfo->outputflags&FLAGS_STATISTICS) && (cnt>0)) {
         printf("samples:  %6d = %8.3f s\n",cnt,((double) cnt)/samplerate);

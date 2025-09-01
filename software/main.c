@@ -149,29 +149,23 @@ void SysTick_Handler(void)
     static int touchcounter = 0;
 
     // /* Touch processing */
-    // if( touchcounter != 0 ) {
-    //     touchcounter--;
-    // } else {
-    //     touchcounter = TOUCH_PERIOD;
-    //     Touch_PeriodicProcess();
-    //     unsigned int v = Touch_Read();
-    //     int touch_center = Touch_GetCenterOfTouch(v);
-    //     if (touch_center > 0) {
-    //         set_bpm_display(player, 60 + (7 - touch_center) * 15);
-    //     }
-    // }
-
-    // for (int i = 0; i < 10; i++)
-    // {
-    //     int a = i * 2;
-    // }
-    
+    if( touchcounter != 0 ) {
+        touchcounter--;
+    } else {
+        touchcounter = TOUCH_PERIOD;
+        Touch_PeriodicProcess();
+        unsigned int v = Touch_Read();
+        int touch_center = Touch_GetCenterOfTouch(v);
+        if (touch_center > 0) {
+            set_bpm_display(player, 60 + (7 - touch_center) * 15);
+        }
+    }
 
     value = Player_Tick(player);
 
-    // output_audio_sample(value);
+    output_audio_sample(value);
 
-    play_tone();
+    // play_tone();
 }
 
 int main(void)
@@ -198,8 +192,9 @@ int main(void)
     // Initialize player
     Player_Config_t config = {
         .sample_rate = TickDivisor,
-        .bpm = 150,
-        .beats_per_bar = 4};
+        .bpm = 90,
+        .beats_per_bar = 4
+    };
     player = Player_GetInstance();
     Player_Init(player, config);
     show_bpm_display(config.bpm);
