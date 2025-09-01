@@ -39,7 +39,7 @@
 #error "Must use either DAC or PWM"
 #endif
 
-const int TickDivisor = 44100; // Frequency of SysTick: 44.1 kHz equal to audio sample rate
+const int TickDivisor = 22050; // Frequency of SysTick. 44.1 kHz equal to audio sample rate
 Player_t *player;
 char current_bpm[4] = "000";
 
