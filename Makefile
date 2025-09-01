@@ -149,7 +149,7 @@ LDFLAGS = \
 ifneq (${DEBUG},)
 	CFLAGS+=-g -D DEBUG -O0
 else
-	CFLAGS+=-Os
+	CFLAGS+=-O3
 endif
 
 # Additional Flags

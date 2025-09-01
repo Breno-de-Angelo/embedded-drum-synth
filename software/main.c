@@ -28,9 +28,58 @@
 #define TIMER TIMER0
 #define TOUCH_PERIOD 100
 
+#define USE_DAC 0
+#define USE_PWM 1
+
+#if USE_DAC && USE_PWM
+#error "Cannot use both DAC and PWM at the same time"
+#endif
+
+#if (!USE_DAC) && (!USE_PWM)
+#error "Must use either DAC or PWM"
+#endif
+
 const int TickDivisor = 44100; // Frequency of SysTick: 44.1 kHz equal to audio sample rate
 Player_t *player;
 char current_bpm[4] = "000";
+
+
+void init_hardware_output()
+{
+#if USE_DAC
+    // Configure DAC
+    unsigned conf = DAC_VREF_VDD
+                   |DAC_SINGLE_ENDED_OUTPUT;
+    DAC_Init(conf,500000,DAC_CHN_LOC_0,DAC_CHN_LOC_0);
+#endif
+#if USE_PWM
+    // Configure PWM output
+    PWM_Init(TIMER, PWM_LOC, PWM_PARAMS_CH1_ENABLEPIN);
+#endif
+}
+
+void output_audio_sample(int16_t sample)
+{
+#if USE_DAC
+    uint32_t shifted = (uint32_t)(sample + 32768);
+    DAC_SetOutput(0, shifted >> 4); // Convert to 12-bit value
+#endif
+#if USE_PWM
+    uint32_t shifted = (uint32_t)(sample + 32768);
+    PWM_Write(TIMER, 1, (unsigned int) (shifted >> 9));
+#endif
+}
+
+void output_audio_sample_uint7_t(uint8_t sample)
+{
+#if USE_DAC
+    uint32_t shifted = (uint32_t)(sample) << 5; // Convert 7-bit to 12-bit
+    DAC_SetCombOutput(0, shifted);
+#endif
+#if USE_PWM
+    PWM_Write(TIMER, PWM_CHANNEL, sample);
+#endif
+}
 
 void set_rythm_display(char *rythm)
 {
@@ -85,7 +134,7 @@ void play_tone()
 {
     static int index = 0;
 
-    PWM_Write(TIMER, PWM_CHANNEL, sine_table[index]);
+    output_audio_sample_uint7_t(sine_table[index]);
 
     index++;
     if (index >= (sizeof(sine_table) / sizeof(sine_table[0])))
@@ -99,25 +148,30 @@ void SysTick_Handler(void)
     static int16_t value = 0;
     static int touchcounter = 0;
 
-    /* Touch processing */
-    if( touchcounter != 0 ) {
-        touchcounter--;
-    } else {
-        touchcounter = TOUCH_PERIOD;
-        Touch_PeriodicProcess();
-        unsigned int v = Touch_Read();
-        int touch_center = Touch_GetCenterOfTouch(v);
-        if (touch_center > 0) {
-            set_bpm_display(player, 60 + (7 - touch_center) * 15);
-        }
-    }
+    // /* Touch processing */
+    // if( touchcounter != 0 ) {
+    //     touchcounter--;
+    // } else {
+    //     touchcounter = TOUCH_PERIOD;
+    //     Touch_PeriodicProcess();
+    //     unsigned int v = Touch_Read();
+    //     int touch_center = Touch_GetCenterOfTouch(v);
+    //     if (touch_center > 0) {
+    //         set_bpm_display(player, 60 + (7 - touch_center) * 15);
+    //     }
+    // }
+
+    // for (int i = 0; i < 10; i++)
+    // {
+    //     int a = i * 2;
+    // }
+    
 
     value = Player_Tick(player);
 
-    uint32_t shifted = (uint32_t)(value + 32768);
-    PWM_Write(TIMER, 1, (unsigned int) (shifted >> 9));
+    // output_audio_sample(value);
 
-    // play_tone();
+    play_tone();
 }
 
 int main(void)
@@ -135,22 +189,16 @@ int main(void)
     /* Configure LCD */
     LCD_Init();
 
-    // /* Configure DAC */
-    // unsigned conf = DA_VREF_VDD
-    //             |DA_ENABLE_CH0
-    //             |DA_SINGLE_ENDED_OUTPUT;
-    // DA_Init(conf, 44100); // 44.1 kHz sample rate
-
-    // Configure PWM output
-    PWM_Init(TIMER, PWM_LOC, PWM_PARAMS_CH1_ENABLEPIN);
+    /* Configure hardware output */
+    init_hardware_output();
 
     // Configure touch input
     Touch_Init();
 
     // Initialize player
     Player_Config_t config = {
-        .sample_rate = 44100,
-        .bpm = 70,
+        .sample_rate = TickDivisor,
+        .bpm = 150,
         .beats_per_bar = 4};
     player = Player_GetInstance();
     Player_Init(player, config);
